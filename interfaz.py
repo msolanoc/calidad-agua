@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 
 # URL de la API. Ajustar cuando Render/Hugging Face asigne la URL pública final.
-API_URL ="https://calidad-agua.onrender.com"
+API_URL ="https://calidad-agua.onrender.com/predict"
 
 st.markdown(
     "<h1 style='text-align: center; font-size: 32px;'>💧 Sistema de Predicción de Calidad del Agua</h1>",
