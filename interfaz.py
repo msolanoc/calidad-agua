@@ -15,7 +15,7 @@ st.markdown(
 modelo = joblib.load('modelo_calidad_agua.pkl')
 
 with st.form("form_prediccion"):
-    st.subheader("Parámetros de Calidad")
+    st.markdown("<h3 style='text-align: center;'>Parámetros de Calidad</h3>", unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
     with col1:
