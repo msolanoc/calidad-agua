@@ -2,8 +2,14 @@ import streamlit as st
 import joblib
 import pandas as pd
 
-st.title("💧 Sistema de Predicción de Calidad del Agua")
-st.write("Ingrese los parámetros fisicoquímicos para evaluar el semáforo del agua.")
+st.markdown(
+    "<h1 style='text-align: center; font-size: 32px;'>💧 Sistema de Predicción de Calidad del Agua</h1>", 
+    unsafe_allow_html=True
+)
+st.markdown(
+    "<p style='text-align: center; font-size: 16px; color: #555555;'>Ingrese los parámetros fisicoquímicos para evaluar el semáforo del agua.</p>", 
+    unsafe_allow_html=True
+)
 
 # Cargamos el modelo entrenado
 modelo = joblib.load('modelo_calidad_agua.pkl')
@@ -43,9 +49,9 @@ if submitted:
     prediccion = modelo.predict(df_entrada)[0]
     
     # Muestra el resultado traducido según el valor del modelo
-    if prediccion == 0:
-        st.success("🟢 Resultado: Categoría 0 (Óptima / Verde)")
-    elif prediccion == 1:
-        st.warning("🟡 Resultado: Categoría 1 (Precaución / Amarillo)")
-    else:
-        st.error("🔴 Resultado: Categoría 2 (Crítica / Rojo)")
+if prediccion == 0:
+    st.success("🟢 Óptima: Apta para consumo y riego")
+elif prediccion == 1:
+    st.warning("🟡 Precaución: Requiere filtración o tratamiento")
+else:
+    st.error("🔴 Crítica: No apta para uso humano ni agrícola")
