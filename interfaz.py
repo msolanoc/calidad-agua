@@ -49,9 +49,9 @@ if submitted:
     prediccion = modelo.predict(df_entrada)[0]
     
     # Muestra el resultado traducido según el valor del modelo
-if prediccion == 0:
-    st.success("🟢 Óptima: Apta para consumo y riego")
-elif prediccion == 1:
-    st.warning("🟡 Precaución: Requiere filtración o tratamiento")
-else:
-    st.error("🔴 Crítica: No apta para uso humano ni agrícola")
+    if prediccion == 0:
+     st.success("🟢 Óptima: Apta para consumo y riego")
+    elif prediccion == 1:
+     st.warning("🟡 Precaución: Requiere filtración o tratamiento")
+    else:
+     st.error("🔴 Crítica: No apta para uso humano ni agrícola")
