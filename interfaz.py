@@ -1,22 +1,21 @@
 import streamlit as st
-import joblib
-import pandas as pd
+import requests
+
+# URL de la API. Ajustar cuando Render/Hugging Face asigne la URL pública final.
+API_URL ="https://calidad-agua.onrender.com"
 
 st.markdown(
-    "<h1 style='text-align: center; font-size: 32px;'>💧 Sistema de Predicción de Calidad del Agua</h1>", 
+    "<h1 style='text-align: center; font-size: 32px;'>💧 Sistema de Predicción de Calidad del Agua</h1>",
     unsafe_allow_html=True
 )
 st.markdown(
-    "<p style='text-align: center; font-size: 16px; color: #555555;'>Ingrese los parámetros fisicoquímicos para evaluar el semáforo del agua.</p>", 
+    "<p style='text-align: center; font-size: 16px; color: #555555;'>Ingrese los parámetros fisicoquímicos para evaluar el semáforo del agua.</p>",
     unsafe_allow_html=True
 )
-
-# Cargamos el modelo entrenado
-modelo = joblib.load('modelo_calidad_agua.pkl')
 
 with st.form("form_prediccion"):
     st.markdown("<h3 style='text-align: center;'>Parámetros de Calidad</h3>", unsafe_allow_html=True)
-    
+
     col1, col2 = st.columns(2)
     with col1:
         alc = st.number_input("ALC_mg/L", value=220.0)
@@ -38,20 +37,37 @@ with st.form("form_prediccion"):
     submitted = st.form_submit_button("Obtener Predicción")
 
 if submitted:
-    datos = {
-        "ALC_mg/L": [alc], "CONDUCT_mS/cm": [conduct], "SDT_M_mg/L": [sdt_m],
-        "FLUORUROS_mg/L": [fluo], "DUR_mg/L": [dur], "COLI_FEC_NMP/100_mL": [coli],
-        "N_NO3_mg/L": [no3], "AS_TOT_mg/L": [as_tot], "CD_TOT_mg/L": [cd_tot],
-        "CR_TOT_mg/L": [cr_tot], "HG_TOT_mg/L": [hg_tot], "PB_TOT_mg/L": [pb_tot],
-        "MN_TOT_mg/L": [mn_tot], "FE_TOT_mg/L": [fe_tot]
+    payload = {
+        "ALC_mg/L": alc,
+        "CONDUCT_mS/cm": conduct,
+        "SDT_M_mg/L": sdt_m,
+        "FLUORUROS_mg/L": fluo,
+        "DUR_mg/L": dur,
+        "COLI_FEC_NMP/100_mL": coli,
+        "N_NO3_mg/L": no3,
+        "AS_TOT_mg/L": as_tot,
+        "CD_TOT_mg/L": cd_tot,
+        "CR_TOT_mg/L": cr_tot,
+        "HG_TOT_mg/L": hg_tot,
+        "PB_TOT_mg/L": pb_tot,
+        "MN_TOT_mg/L": mn_tot,
+        "FE_TOT_mg/L": fe_tot,
     }
-    df_entrada = pd.DataFrame(datos)
-    prediccion = modelo.predict(df_entrada)[0]
-    
-    # Muestra el resultado traducido según el valor del modelo
-    if prediccion == 0:
-     st.success("🟢 Óptima: Apta para consumo y riego")
-    elif prediccion == 1:
-     st.warning("🟡 Precaución: Requiere filtración o tratamiento")
-    else:
-     st.error("🔴 Crítica: No apta para uso humano ni agrícola")
+
+    try:
+        respuesta = requests.post(API_URL, json=payload, timeout=10)
+        respuesta.raise_for_status()
+        resultado = respuesta.json()
+        mensaje = resultado["mensaje"]
+        prediccion = resultado["prediccion"]
+
+        # Mismo estilo visual que ya tenía la interfaz
+        if prediccion == 0:
+            st.success(mensaje)
+        elif prediccion == 1:
+            st.warning(mensaje)
+        else:
+            st.error(mensaje)
+
+    except requests.exceptions.RequestException as e:
+        st.error(f"No se pudo conectar con la API: {e}")
